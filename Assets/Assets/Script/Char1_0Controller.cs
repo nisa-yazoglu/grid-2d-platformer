@@ -1,5 +1,3 @@
-// Char1_0Controller.cs
-// Unity 6 (6.03+) uyumlu 2D karakter kontrolcüsü
 // Kontroller: W (zıplama/çift zıplama), A (sol), D (sağ), Shift (dash)
 
 using UnityEngine;
@@ -27,7 +25,6 @@ public class Char1_0Controller : MonoBehaviour
     [Tooltip("Dash bekleme süresi (cooldown) (saniye)")]
     public float dashCooldown = 5f;
 
-
     [Header("Zemin Kontrolü")]
     [Tooltip("Zemin kontrol noktası (Transform)")]
     public Transform groundCheck;
@@ -46,16 +43,13 @@ public class Char1_0Controller : MonoBehaviour
     [Tooltip("Adım sesi aralığı (saniye)")]
     public float stepInterval = 0.35f;
 
-    // Public properties for Animation Script
     public bool IsGrounded => isGrounded;
     public bool IsDashing => isDashing;
     public float MoveDirection => currentMoveDirection;
     public Vector2 Velocity => rb.linearVelocity;
-    
-    // Event for Jump trigger
+
     public event System.Action OnJump;
-    
-    // Event for Collect trigger
+
     public event System.Action OnCollect;
 
     // Private değişkenler
@@ -71,7 +65,6 @@ public class Char1_0Controller : MonoBehaviour
     private float nextStepTime = 0f; // Bir sonraki adım sesi zamanı
     private AudioSource audioSource;
 
-
     // Sprite yönlendirmesi için
     private SpriteRenderer spriteRenderer;
     private Vector3 originalScale;
@@ -79,9 +72,8 @@ public class Char1_0Controller : MonoBehaviour
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
-        audioSource = GetComponent<AudioSource>(); // AudioSource bileşenini al
-        
-        // --- AUDIO FIX: Sesi 2D Olarak Zorla ---
+        audioSource = GetComponent<AudioSource>();
+
         if (audioSource != null)
         {
             audioSource.spatialBlend = 0f; // 0 = 2D, 1 = 3D
@@ -91,19 +83,17 @@ public class Char1_0Controller : MonoBehaviour
             Debug.LogError("Char1_0Controller: AudioSource bileşeni bulunamadı!");
         }
 
-        // --- AUDIO DEBUG: Atamaları Kontrol Et ---
         if (jumpSound == null) Debug.LogWarning("Char1_0Controller: Jump Sound atanmamış!");
         if (moveSounds == null || moveSounds.Length == 0) Debug.LogWarning("Char1_0Controller: Move Sounds atanmamış!");
         // Daha iyi çarpışma algılama için
         rb.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
         originalGravityScale = rb.gravityScale;
 
-        // --- FIX: Duvarlara yapışmayı önlemek için sürtünmesiz materyal oluştur ve ata ---
+        // Duvarlara yapışmayı önlemek için sürtünmesiz materyal
         PhysicsMaterial2D slipperyMaterial = new PhysicsMaterial2D("Slippery");
         slipperyMaterial.friction = 0f;
         slipperyMaterial.bounciness = 0f;
         rb.sharedMaterial = slipperyMaterial;
-        // ---------------------------------------------------------------------------------
 
         spriteRenderer = GetComponent<SpriteRenderer>();
         originalScale = transform.localScale;
@@ -153,9 +143,6 @@ public class Char1_0Controller : MonoBehaviour
         ApplyMovement();
     }
 
-    /// <summary>
-    /// Zemin kontrolü
-    /// </summary>
     void CheckGrounded()
     {
         bool wasGrounded = isGrounded;
@@ -163,7 +150,7 @@ public class Char1_0Controller : MonoBehaviour
 
         // Tüm çakışmaları al
         Collider2D[] colliders = Physics2D.OverlapCircleAll(groundCheck.position, groundCheckRadius, groundLayer);
-        
+
         foreach (Collider2D collider in colliders)
         {
             // Eğer çarptığımız şey kendimiz değilse, yerdedir
@@ -178,8 +165,8 @@ public class Char1_0Controller : MonoBehaviour
         if (isGrounded)
         {
             currentJumpCount = 0;
-            
-            // Eğer dash bitmişse ama hala gravity bozuksa düzelt (Güvenlik önlemi)
+
+            // Dash bittiyse yerçekimini geri aç
             if (!isDashing && rb.gravityScale == 0)
             {
                  rb.gravityScale = originalGravityScale;
@@ -187,9 +174,6 @@ public class Char1_0Controller : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// A ve D tuşlarıyla yatay hareket girişi
-    /// </summary>
     void HandleMovementInput()
     {
         currentMoveDirection = 0f;
@@ -210,16 +194,12 @@ public class Char1_0Controller : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// W tuşuyla zıplama ve çift zıplama
-    /// </summary>
     void HandleJumpInput()
     {
-        // Dash sırasında zıplamaya izin ver veya verme (tercihe bağlı, şu an veriyoruz)
         if (Input.GetKeyDown(KeyCode.W))
         {
             // Sadece zıplama hakkımız varsa zıpla
-            // isGrounded kontrolünü buraya eklemeye gerek yok çünkü isGrounded true ise zaten count 0'dır.
+
             if (currentJumpCount < maxJumps)
             {
                 Jump();
@@ -227,15 +207,12 @@ public class Char1_0Controller : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Shift tuşuyla dash
-    /// </summary>
     void HandleDashInput()
     {
         // Dash başlat
         if (Input.GetKeyDown(KeyCode.LeftShift) || Input.GetKeyDown(KeyCode.RightShift))
         {
-            // Hareket ediyor olmalı, dash yapıyor olmamalı VE cooldown bitmiş olmalı
+            // Hareket ediyorsa, dash yapmıyorsa ve cooldown bittiyse
             if (!isDashing && currentMoveDirection != 0 && Time.time >= nextDashTime)
             {
                 StartDash();
@@ -253,10 +230,6 @@ public class Char1_0Controller : MonoBehaviour
         }
     }
 
-
-    /// <summary>
-    /// Hareketi uygula
-    /// </summary>
     void ApplyMovement()
     {
         float speed = moveSpeed;
@@ -267,7 +240,7 @@ public class Char1_0Controller : MonoBehaviour
             speed *= dashSpeedMultiplier;
         }
 
-        // Yatay hızı ayarla, dikey hızı koru (Dash sırasında dikey hız 0 olabilir eğer istenirse)
+        // Yatay hızı ayarla, dikey hızı koru
         if (isDashing)
         {
              // Dash sırasında yerçekimi yok, dümdüz git
@@ -279,21 +252,17 @@ public class Char1_0Controller : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Zıplama işlemi
-    /// </summary>
     void Jump()
     {
         // Dikey hızı sıfırla ve yukarı kuvvet uygula
         rb.linearVelocity = new Vector2(rb.linearVelocity.x, 0f);
         rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
-        
+
         currentJumpCount++;
 
-        // Trigger event
         OnJump?.Invoke();
-        
-        // Zıpladık, kısa bir süre ground check bizi resetlemesin
+
+        // Zıpladıktan hemen sonra zemin kontrolü yapılmasın
         isGrounded = false;
         nextGroundCheckTime = Time.time + 0.1f; // 0.1 saniye bekle
 
@@ -304,26 +273,21 @@ public class Char1_0Controller : MonoBehaviour
         if (audioSource != null && jumpSound != null)
         {
             audioSource.PlayOneShot(jumpSound);
-            // Debug.Log("Zıplama sesi çalındı.");
         }
-        else if (jumpSound == null) 
+        else if (jumpSound == null)
         {
-             // Debug.LogWarning("Zıplama sesi çalınamadı (jumpSound eksik).");
         }
         }
     }
 
-    /// <summary>
-    /// Dash başlat
-    /// </summary>
     void StartDash()
     {
         isDashing = true;
         dashTimeRemaining = dashDuration;
-        
+
         // Cooldown'ı başlat
         nextDashTime = Time.time + dashCooldown;
-        
+
         // Dash sırasında yerçekimini kapat
         rb.gravityScale = 0f;
 
@@ -331,21 +295,15 @@ public class Char1_0Controller : MonoBehaviour
         rb.linearVelocity = new Vector2(rb.linearVelocity.x, 0f);
     }
 
-    /// <summary>
-    /// Dash bitir
-    /// </summary>
     void EndDash()
     {
         isDashing = false;
         dashTimeRemaining = 0f;
-        
+
         // Yerçekimini geri aç
         rb.gravityScale = originalGravityScale;
     }
 
-    /// <summary>
-    /// Sprite yönlendirmesi
-    /// </summary>
     void FlipSprite(bool faceRight)
     {
         if (spriteRenderer != null)
@@ -361,9 +319,6 @@ public class Char1_0Controller : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Editor'da zemin kontrol alanını görselleştir
-    /// </summary>
     void OnDrawGizmosSelected()
     {
         if (groundCheck != null)
@@ -373,25 +328,16 @@ public class Char1_0Controller : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Çarpışma başladığında (Garanti zemin algılama)
-    /// </summary>
     void OnCollisionEnter2D(Collision2D collision)
     {
         EvaluateCollision(collision);
     }
 
-    /// <summary>
-    /// Çarpışma devam ederken (Garanti zemin algılama)
-    /// </summary>
     void OnCollisionStay2D(Collision2D collision)
     {
         EvaluateCollision(collision);
     }
 
-    /// <summary>
-    /// Hareket seslerini yönetir
-    /// </summary>
     void HandleMovementAudio()
     {
         // Yerdeysek ve hareket ediyorsak ve zamanı geldiyse
@@ -417,9 +363,6 @@ public class Char1_0Controller : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Çarpışma analizi: Eğer zeminse zıplama hakkını yenile
-    /// </summary>
     void EvaluateCollision(Collision2D collision)
     {
         foreach (ContactPoint2D contact in collision.contacts)
@@ -429,29 +372,22 @@ public class Char1_0Controller : MonoBehaviour
             {
                 isGrounded = true;
                 currentJumpCount = 0;
-                
-                // Gravity fix
+
                 if (!isDashing && rb.gravityScale == 0)
                 {
                      rb.gravityScale = originalGravityScale;
                 }
-                
+
                 break;
             }
         }
     }
-    
-    /// <summary>
-    /// Collect olayını tetikler
-    /// </summary>
+
     public void TriggerCollectAction()
     {
         OnCollect?.Invoke();
     }
 
-    /// <summary>
-    /// Oyuncu girdilerini açar veya kapatır (Oyun sonu, zafer vb. durumlar için)
-    /// </summary>
     public void SetInputActive(bool active)
     {
         isInputActive = active;
@@ -460,9 +396,8 @@ public class Char1_0Controller : MonoBehaviour
             // Hareket durdur
             rb.linearVelocity = Vector2.zero;
             currentMoveDirection = 0;
-            // Animasyonları durdurmak için gerekirse buraya ekleme yapılabilir
         }
     }
-    
+
     private bool isInputActive = true;
 }

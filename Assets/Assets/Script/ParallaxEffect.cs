@@ -6,17 +6,17 @@ public class ParallaxEffect : MonoBehaviour
     private float startPos;
 
     [Header("Ayarlar")]
-    public GameObject cam; // Kamerayı Inspector'dan buraya sürükle
-    public float parallaxFactor; // Hız çarpanı (Örn: 0.8 uzak, 0.2 yakın)
+    public GameObject cam;
+    public float parallaxFactor; // HÄ±z Ã§arpanÄ± (Ã–rn: 0.8 uzak, 0.2 yakÄ±n)
 
     void Start()
     {
-        // 1. ADIM: Başlangıç kaymasını (zıplamayı) önlemek için ofset hesapla
-        // Kamera 0'da değilse bile arka plan Scene ekranındaki yerini korur.
+        // BaÅŸlangÄ±Ã§ kaymasÄ±nÄ± Ã¶nlemek iÃ§in ofset hesapla
+
         startPos = transform.position.x - (cam.transform.position.x * parallaxFactor);
 
-        // 2. ADIM: Genişliği (Length) dinamik hesapla
-        // Eğer bu obje bir Parent ise altındaki tüm Sprite'ların toplam genişliğini bulur.
+        // GeniÅŸliÄŸi hesapla
+        // EÄŸer bu obje bir Parent ise altÄ±ndaki tÃ¼m Sprite'larÄ±n toplam geniÅŸliÄŸini bulur.
         SpriteRenderer mainSprite = GetComponent<SpriteRenderer>();
 
         if (mainSprite != null)
@@ -26,7 +26,7 @@ public class ParallaxEffect : MonoBehaviour
         }
         else
         {
-            // Eğer bu bir Parent objesiyse (Düz-Flip ikilisi gibi)
+            // EÄŸer bu bir Parent objesiyse (DÃ¼z-Flip ikilisi gibi)
             SpriteRenderer[] children = GetComponentsInChildren<SpriteRenderer>();
             length = 0;
             foreach (var child in children)
@@ -36,17 +36,16 @@ public class ParallaxEffect : MonoBehaviour
         }
     }
 
-    // ParallaxEffect.cs içinde LateUpdate kısmını şu şekilde dene:
     void LateUpdate()
     {
-        // Kameranın başlangıca göre ne kadar yol aldığını hesapla
+        // KameranÄ±n baÅŸlangÄ±ca gÃ¶re ne kadar yol aldÄ±ÄŸÄ±nÄ± hesapla
         float camX = cam.transform.position.x;
         float distance = (camX * parallaxFactor);
 
-        // Mevcut Y ve Z'yi koruyarak pozisyonu güncelle
+        // Mevcut Y ve Z'yi koruyarak pozisyonu gÃ¼ncelle
         transform.position = new Vector3(startPos + distance, transform.position.y, transform.position.z);
 
-        // Sonsuz döngü kontrolü
+        // Sonsuz dÃ¶ngÃ¼ kontrolÃ¼
         float temp = (camX * (1 - parallaxFactor));
 
         if (temp > startPos + length)

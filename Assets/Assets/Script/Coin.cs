@@ -3,7 +3,7 @@ using UnityEngine;
 public class Coin : MonoBehaviour
 {
     [Header("Ayarlar")]
-    [Tooltip("Bu coini alınca kaç puan verilecek?")]
+    [Tooltip("Coin alındığında verilecek puan")]
     public int scorePoint = 10;
 
     [Tooltip("Efekt ses klibi (opsiyonel)")]
@@ -12,7 +12,7 @@ public class Coin : MonoBehaviour
     private void OnTriggerEnter2D(Collider2D other)
     {
         // Çarpan nesnenin Player olup olmadığını kontrol et
-        // Not: Player objenizin Tag'inin "Player" olduğundan emin olun!
+
         if (other.CompareTag("Player"))
         {
             // Önce Controller'ı almaya çalış
@@ -21,7 +21,7 @@ public class Coin : MonoBehaviour
             {
                 controller.TriggerCollectAction();
             }
-            
+
             Collect();
         }
         else if (other.GetComponent<Char1_0Controller>() != null)
@@ -34,7 +34,7 @@ public class Coin : MonoBehaviour
 
     void Collect()
     {
-        // GameManager'a puan eklemesini söyle
+        // GameManager'a puan ekle
         if (GameManager.Instance != null)
         {
             GameManager.Instance.AddScore(scorePoint);
@@ -44,7 +44,7 @@ public class Coin : MonoBehaviour
             Debug.LogWarning("Sahned GameManager bulunamadı! Puan eklenemedi.");
         }
 
-        // Ses çalma (opsiyonel)
+        // Ses çal
         if (collectSound != null)
         {
             AudioSource.PlayClipAtPoint(collectSound, transform.position);

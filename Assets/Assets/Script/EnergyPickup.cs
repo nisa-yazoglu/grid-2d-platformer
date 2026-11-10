@@ -11,7 +11,6 @@ public class EnergyPickup : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        // Debug Log: Çarpışma algılandı mı?
         Debug.Log($"EnergyPickup: Çarpışma algılandı. Çarpan Obje: {other.name}, Tag: {other.tag}");
 
         // Çarpan nesne Player mı?
@@ -19,14 +18,14 @@ public class EnergyPickup : MonoBehaviour
         {
             // PlayerEnergy scriptini bul
             PlayerEnergy playerEnergy = other.GetComponent<PlayerEnergy>();
-            
+
             if (playerEnergy != null)
             {
                 Debug.Log($"EnergyPickup: PlayerEnergy bulundu. {energyAmount} enerji ekleniyor.");
                 // Enerji ekle
                 playerEnergy.AddEnergy(energyAmount);
-                
-                // Toplama işlemini gerçekleştir (Ses, yok etme)
+
+                // Ses çal ve objeyi yok et
                 Collect();
             }
             else
@@ -42,7 +41,7 @@ public class EnergyPickup : MonoBehaviour
 
     void Collect()
     {
-        // Ses çalma (opsiyonel)
+        // Ses çal
         if (collectSound != null)
         {
             AudioSource.PlayClipAtPoint(collectSound, transform.position);

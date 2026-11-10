@@ -3,12 +3,12 @@ using UnityEngine;
 public class HareketliPlatform : MonoBehaviour
 {
     [Header("Hareket Ayarları")]
-    [Tooltip("Platformun gideceği noktalar. (Sürükle bırak ile Transform atayabilirsin)")]
+    [Tooltip("Platformun gideceği noktalar")]
     public Transform[] hareketNoktalari;
-    
+
     [Tooltip("Platformun hareket hızı")]
     public float hiz = 2.0f;
-    
+
     [Tooltip("Noktaya ulaştığında bekleme süresi")]
     public float beklemeSuresi = 0.5f;
 
@@ -27,9 +27,6 @@ public class HareketliPlatform : MonoBehaviour
             Debug.LogWarning("HareketliPlatform: Hiç hareket noktası atanmamış!");
             return;
         }
-
-        // BAŞLANGIÇTA IŞINLAMAYI KALDIRDIK. 
-        // Böylece oyun başlayınca platform kaybolmaz, ilk noktaya doğru gitmeye başlar.
     }
 
     void Update()
@@ -44,14 +41,13 @@ public class HareketliPlatform : MonoBehaviour
         // Hedef noktayı belirle
         Vector3 hedefNokta = hareketNoktalari[mevcutNoktaIndeksi].position;
 
-        // ÖNEMLİ: Z eksenini (derinliği) koru! 
-        // Platformun arkaya kaçıp kaybolmasını engeller.
+        // Z eksenini koru
+
         hedefNokta.z = transform.position.z;
 
         // Hedefe doğru hareket et
         transform.position = Vector3.MoveTowards(transform.position, hedefNokta, hiz * Time.deltaTime);
-        
-        // Debug için konsola yazdıralım (Sorunu çözünce bu satırı silebiliriz)
+
         Debug.Log($"[{gameObject.name}] Gidilen Hedef: {hedefNokta} | Şu anki Konum: {transform.position}");
 
         // Hedefe vardık mı?

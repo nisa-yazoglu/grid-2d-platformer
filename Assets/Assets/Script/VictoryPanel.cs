@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class VictoryPanel : MonoBehaviour
 {
-    // Bu fonksiyonu "Sonraki Bölüm" butonunun OnClick olayına bağlayın
+    // "Sonraki Bölüm" butonu
     public void OnNextLevelClicked()
     {
         if (LevelManager.Instance != null)
@@ -11,7 +11,7 @@ public class VictoryPanel : MonoBehaviour
         }
     }
 
-    // Bu fonksiyonu "Tekrar Dene" butonunun OnClick olayına bağlayın
+    // "Tekrar Dene" butonu
     public void OnRestartClicked()
     {
         if (LevelManager.Instance != null)

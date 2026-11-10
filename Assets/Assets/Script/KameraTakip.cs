@@ -9,40 +9,39 @@ public class KameraTakip : MonoBehaviour
     private Vector3 mevcutHiz = Vector3.zero;
 
     [Header("Sınır Ayarları")]
-    [Tooltip("Kamera sınırlarını aktif etmek için bu kutucuğu işaretleyin.")]
+    [Tooltip("Kamera sınırlarını aktif eder")]
     public bool sinirlariAktifEt = false;
 
-    [Header("Sınır Değerleri Nasıl Belirlenir?")]
-    [Tooltip("Oyun sahnesinde kamerayı en sola götürün ve o anki Transform X değerini buraya yazın.")]
+    [Header("Sınır Değerleri")]
+    [Tooltip("Kameranın gidebileceği en küçük X değeri")]
     public float minX;
-    [Tooltip("Oyun sahnesinde kamerayı en sağa götürün ve o anki Transform X değerini buraya yazın.")]
+    [Tooltip("Kameranın gidebileceği en büyük X değeri")]
     public float maxX;
-    [Tooltip("Oyun sahnesinde kamerayı en aşağı götürün ve o anki Transform Y değerini buraya yazın.")]
+    [Tooltip("Kameranın gidebileceği en küçük Y değeri")]
     public float minY;
-    [Tooltip("Oyun sahnesinde kamerayı en yukarı götürün ve o anki Transform Y değerini buraya yazın.")]
+    [Tooltip("Kameranın gidebileceği en büyük Y değeri")]
     public float maxY;
 
     [Header("Ekstra Ayarlar")]
-    [Tooltip("Kamerayı karakterin merkezinden yukarı veya aşağı kaydırır. Pozitif değer vererek karakterin üst kısmını daha çok görebilirsiniz.")]
-    public float yOffset = 1.0f; // Varsayılan olarak biraz yukarıyı gösterelim
+    [Tooltip("Kameranın karaktere göre dikey kayması")]
+    public float yOffset = 1.0f;
 
     void LateUpdate()
     {
         if (hedef == null) return;
 
-        // Mevcut kamera pozisyonunu baz alıyoruz
         float hedefX = transform.position.x;
         float hedefY = transform.position.y;
 
-        // --- X EKSENİ HESAPLAMA ---
+        // X ekseni
         float mesafeX = hedef.position.x - transform.position.x;
         if (Mathf.Abs(mesafeX) > beklemeMesafesi)
         {
             hedefX = hedef.position.x - (Mathf.Sign(mesafeX) * beklemeMesafesi);
         }
 
-        // --- Y EKSENİ HESAPLAMA ---
-        // Karakterin Y pozisyonuna offset ekleyerek kameranın dikeyde nerede durması gerektiğini belirliyoruz.
+        // Y ekseni
+
         float hedeflenenY = hedef.position.y + yOffset;
         float mesafeY = hedeflenenY - transform.position.y;
 
@@ -51,10 +50,9 @@ public class KameraTakip : MonoBehaviour
             hedefY = hedeflenenY - (Mathf.Sign(mesafeY) * beklemeMesafesi);
         }
 
-        // --- SINIRLANDIRMA (CLAMPING) ---
+        // Sınırlandırma
         if (sinirlariAktifEt)
         {
-            // Kullanıcı yanlışlıkla min > max girerse diye önlem alıyoruz
             float realMinX = Mathf.Min(minX, maxX);
             float realMaxX = Mathf.Max(minX, maxX);
             float realMinY = Mathf.Min(minY, maxY);
@@ -64,11 +62,10 @@ public class KameraTakip : MonoBehaviour
             hedefY = Mathf.Clamp(hedefY, realMinY, realMaxY);
         }
 
-        // --- HAREKET KISMI (Z Eksenini Sabitleyen SmoothDamp) ---
-        // Z eksenini direkt -10f olarak sabitleyerek parallax derinlik hatalarını önlüyoruz.
+        // Kamerayı yumuşakça hedefe taşı
+
         Vector3 hedefPozisyon = new Vector3(hedefX, hedefY, -10f);
 
-        // transform.position'ı doğrudan güncelliyoruz
         transform.position = Vector3.SmoothDamp(transform.position, hedefPozisyon, ref mevcutHiz, yumusaklik);
     }
 
@@ -90,9 +87,9 @@ public class KameraTakip : MonoBehaviour
             float centerY = (realMinY + realMaxY) / 2f;
             float sizeX = Mathf.Abs(realMaxX - realMinX);
             float sizeY = Mathf.Abs(realMaxY - realMinY);
-            
+
             // Kamera görüş alanı (yaklaşık) için bir kutu çiz
-            // Not: Bu sadece merkez noktanın sınırlarını gösterir.
+
             Gizmos.DrawWireCube(new Vector3(centerX, centerY, 0), new Vector3(sizeX, sizeY, 1));
         }
     }

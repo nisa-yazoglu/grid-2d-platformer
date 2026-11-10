@@ -22,7 +22,7 @@ public class PlayerEnergy : MonoBehaviour
 
     void Start()
     {
-        // Enerjiyi fulle
+        // Enerjiyi doldur
         currentEnergy = maxEnergy;
 
         // Controller referansını al
@@ -42,14 +42,14 @@ public class PlayerEnergy : MonoBehaviour
         else
         {
             currentEnergy = 0;
-            // Enerji bittiğinde ne olacağını buraya ekleyebilirsiniz (Örn: Oyun Bitti, Hareket Kısıtlama vs.)
+            // Enerji bitince oyun biter
             if (GameManager.Instance != null)
             {
                 GameManager.Instance.GameOver();
             }
         }
 
-        // UI Güncelleme (Her frame çağırmak yerine event bazlı da yapılabilir ama basitlik için böyle bırakıyoruz)
+        // Enerji barını güncelle
         if (GameManager.Instance != null)
         {
             GameManager.Instance.UpdateEnergyUI(currentEnergy, maxEnergy);
@@ -63,7 +63,7 @@ public class PlayerEnergy : MonoBehaviour
         if (playerController != null)
         {
             // Hareket ediyor mu, zıplıyor mu veya dash atıyor mu kontrol et
-            // Char1_0Controller'da public propertyler üzerinden okuyoruz
+
             bool isMoving = Mathf.Abs(playerController.MoveDirection) > 0.1f;
             bool isJumping = !playerController.IsGrounded; // Havadaysa zıplıyordur (veya düşüyordur)
             bool isDashing = playerController.IsDashing;
@@ -79,15 +79,8 @@ public class PlayerEnergy : MonoBehaviour
 
         // Enerjiyi clamp'le (0'ın altına düşmesin)
         if (currentEnergy < 0) currentEnergy = 0;
-        
-        // Debug için konsola yaz (Sadece test ederken açık kalsın)
-        // Debug.Log($"Enerji: {currentEnergy:F1} / {maxEnergy} - Tüketim Hızı: {drainRate}");
     }
 
-    /// <summary>
-    /// Enerji ekler (Collectibles vb. için)
-    /// </summary>
-    /// <param name="amount">Eklenecek miktar</param>
     public void AddEnergy(float amount)
     {
         currentEnergy += amount;

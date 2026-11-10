@@ -1,22 +1,16 @@
 using UnityEngine;
-using TMPro; // TextMeshPro kütüphanesi (Unity'nin modern text sistemi)
-using UnityEngine.SceneManagement; // İlerde sahne yenilemek gerekirse diye
+using TMPro;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
-    // Singleton: Her yerden GameManager.Instance diyerek ulaşmak için
     public static GameManager Instance { get; private set; }
 
     [Header("Oyun Ayarları")]
-    // [Tooltip("Oyun süresi (saniye)")]
-    // public float gameTime = 60f; // Zaman sayacı kaldırıldı
 
     [Header("UI Referansları")]
     [Tooltip("Puanın yazacağı Text")]
     public TextMeshProUGUI scoreText;
-
-    // [Tooltip("Sürenin yazacağı Text")]
-    // public TextMeshProUGUI timerText; // Zaman sayacı UI kaldırıldı
 
     [Tooltip("Enerji Barı Görseli (Image - Fill Type: Horizontal)")]
     public UnityEngine.UI.Image energyBarImage;
@@ -33,11 +27,10 @@ public class GameManager : MonoBehaviour
 
     void Awake()
     {
-        // Singleton Pattern kurulumu
+        // Singleton
         if (Instance == null)
         {
             Instance = this;
-            // DontDestroyOnLoad(gameObject); // Eğer sahneler arası geçişte yok olmasın isterseniz bunu açın
         }
         else
         {
@@ -48,8 +41,7 @@ public class GameManager : MonoBehaviour
     void Start()
     {
         UpdateScoreUI();
-        // UpdateTimerUI(); // Kaldırıldı
-        
+
         // Enerji barı rengini mavi yap
         if (energyBarImage != null)
         {
@@ -73,28 +65,8 @@ public class GameManager : MonoBehaviour
 
     void Update()
     {
-        /*
-        if (isGameActive)
-        {
-            // Süreyi geri say
-            gameTime -= Time.deltaTime;
-
-            if (gameTime <= 0)
-            {
-                gameTime = 0;
-                GameOver();
-            }
-
-            // Her frame'de değil de saniye değiştikçe güncellemek daha performanslıdır ama şimdilik her frame güncelleyelim (akıcı görünsün)
-            UpdateTimerUI();
-        }
-        */
     }
 
-    /// <summary>
-    /// Skora puan ekler
-    /// </summary>
-    /// <param name="amount">Eklenecek puan miktarı</param>
     public void AddScore(int amount)
     {
         if (!isGameActive) return;
@@ -103,9 +75,6 @@ public class GameManager : MonoBehaviour
         UpdateScoreUI();
     }
 
-    /// <summary>
-    /// UI üzerindeki Skor yazısını günceller
-    /// </summary>
     void UpdateScoreUI()
     {
         if (scoreText != null)
@@ -114,25 +83,6 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    /*
-    /// <summary>
-    /// UI üzerindeki Süre yazısını günceller
-    /// </summary>
-    void UpdateTimerUI()
-    {
-        if (timerText != null)
-        {
-            // Süreyi 00 formatında göster (tam sayı)
-            timerText.text = "Time: " + Mathf.CeilToInt(gameTime).ToString();
-        }
-    }
-    */
-
-    /// <summary>
-    /// Enerji barını günceller
-    /// </summary>
-    /// <param name="current">Mevcut enerji</param>
-    /// <param name="max">Maksimum enerji</param>
     public void UpdateEnergyUI(float current, float max)
     {
         if (energyBarImage != null)
@@ -143,24 +93,18 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Oyunu duraklatır
-    /// </summary>
     public void PauseGame()
     {
         if (!isGameActive) return;
 
         Time.timeScale = 0f; // Zamanı durdur
-        
+
         if (pausePanel != null)
         {
             pausePanel.SetActive(true);
         }
     }
 
-    /// <summary>
-    /// Oyunu devam ettirir
-    /// </summary>
     public void ResumeGame()
     {
         if (!isGameActive) return;
@@ -173,9 +117,6 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Oyun Bitti (Game Over) işlemlerini başlatır
-    /// </summary>
     public void GameOver()
     {
         if (!isGameActive) return; // Zaten oyun bittiyse tekrar yapma

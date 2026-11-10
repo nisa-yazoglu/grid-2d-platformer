@@ -23,7 +23,6 @@ public class LevelManager : MonoBehaviour
         if (Instance == null)
         {
             Instance = this;
-            // DontDestroyOnLoad(gameObject);
         }
         else
         {
@@ -46,15 +45,9 @@ public class LevelManager : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Bölüm başarıyla tamamlandığında çağrılır.
-    /// </summary>
     public void LevelComplete()
     {
         Debug.Log("Bölüm Tamamlandı!");
-
-        // Oyunu durdurmak istersek burayı açabiliriz.
-        // Time.timeScale = 0f; 
 
         // Zafer panelini göster
         if (victoryPanel != null)
@@ -68,7 +61,7 @@ public class LevelManager : MonoBehaviour
             audioSource.PlayOneShot(levelCompleteSound);
         }
 
-        // --- NEW: Karakterin hareketini durdur ---
+        // Karakterin hareketini durdur
         Char1_0Controller player = FindAnyObjectByType<Char1_0Controller>();
         if (player != null)
         {
@@ -76,18 +69,15 @@ public class LevelManager : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Bir sonraki sahneye geçer.
-    /// </summary>
     public void LoadNextLevel()
     {
-        // Zamanı normale döndür (eğer durdurduysak)
+        // Zamanı normale döndür
         Time.timeScale = 1f;
 
         int currentSceneIndex = SceneManager.GetActiveScene().buildIndex;
         int nextSceneIndex = currentSceneIndex + 1;
 
-        // Eğer sonraki sahne varsa yükle, yoksa başa dön (veya Ana Menüye)
+        // Sonraki sahne varsa yükle, yoksa ana menüye dön
         if (nextSceneIndex < SceneManager.sceneCountInBuildSettings)
         {
             SceneManager.LoadScene(nextSceneIndex);
@@ -99,9 +89,6 @@ public class LevelManager : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Mevcut bölümü yeniden başlatır.
-    /// </summary>
     public void RestartLevel()
     {
         Time.timeScale = 1f;

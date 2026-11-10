@@ -31,8 +31,7 @@ public class AudioManager : MonoBehaviour
         }
 
         instance = this;
-        // Don't Destroy On Load is handled in Initialize for the created object, 
-        // but if someone manually places it in scene, we should ensure it persists too.
+
         DontDestroyOnLoad(gameObject);
 
         SetupAudioSource();
@@ -48,7 +47,7 @@ public class AudioManager : MonoBehaviour
         }
 
         audioSource.loop = true;
-        audioSource.playOnAwake = false; // We will play it manually
+        audioSource.playOnAwake = false;
     }
 
     public void PlayBackgroundMusic()

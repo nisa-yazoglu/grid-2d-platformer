@@ -2,9 +2,6 @@ using UnityEngine;
 
 public class PausePanel : MonoBehaviour
 {
-    /// <summary>
-    /// "Devam Et" butonuna basıldığında
-    /// </summary>
     public void OnResumeClicked()
     {
         if (GameManager.Instance != null)
@@ -13,9 +10,6 @@ public class PausePanel : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// "Tekrar Başla" butonuna basıldığında
-    /// </summary>
     public void OnRestartClicked()
     {
         if (LevelManager.Instance != null)
@@ -24,12 +18,9 @@ public class PausePanel : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// "Ana Menü" (Opsiyonel)
-    /// </summary>
     public void OnMainMenuClicked()
     {
-        Time.timeScale = 1f; // Zamanı düzeltmeyi unutma
+        Time.timeScale = 1f;
         UnityEngine.SceneManagement.SceneManager.LoadScene(0);
     }
 }

@@ -3,12 +3,12 @@ using UnityEngine;
 public class HareketliPlatformV2 : MonoBehaviour
 {
     [Header("Hareket Ayarları")]
-    [Tooltip("Platformun gideceği noktalar. (Sürükle bırak ile Transform atayabilirsin)")]
+    [Tooltip("Platformun gideceği noktalar")]
     public Transform[] hareketNoktalari;
-    
+
     [Tooltip("Platformun hareket hızı")]
     public float hiz = 2.0f;
-    
+
     [Tooltip("Noktaya ulaştığında bekleme süresi")]
     public float beklemeSuresi = 0.5f;
 
@@ -16,10 +16,10 @@ public class HareketliPlatformV2 : MonoBehaviour
     public bool daireselDongu = false;
 
     [Header("Başlangıç Ayarları")]
-    [Tooltip("Oyun başladığında hangi noktaya gitmeyi hedeflesin? (Örn: 0 değil 1 seçerseniz, doğrudan 1'e gider)")]
+    [Tooltip("Oyun başladığında ilk gidilecek noktanın indeksi")]
     public int baslangicHedefIndeksi = 0;
 
-    [Tooltip("İşaretlenirse, oyun başladığında platform direkt olarak başlangıç hedef noktasına ışınlanır.")]
+    [Tooltip("Oyun başında platformu başlangıç noktasına ışınlar")]
     public bool baslangictaIsinlan = false;
 
     private int mevcutNoktaIndeksi = 0;
@@ -35,7 +35,7 @@ public class HareketliPlatformV2 : MonoBehaviour
             return;
         }
 
-        // Başlangıç indeksini ayarla (Sınır kontrolü yapalım)
+        // Başlangıç indeksini ayarla
         if (baslangicHedefIndeksi < 0 || baslangicHedefIndeksi >= hareketNoktalari.Length)
         {
             Debug.LogWarning($"HareketliPlatformV2: Başlangıç indeksi ({baslangicHedefIndeksi}) geçersiz! 0'a eşitleniyor.");
@@ -48,10 +48,7 @@ public class HareketliPlatformV2 : MonoBehaviour
         if (baslangictaIsinlan && hareketNoktalari[mevcutNoktaIndeksi] != null)
         {
             transform.position = hareketNoktalari[mevcutNoktaIndeksi].position;
-            // Bir sonraki noktayı hedeflemesi için mantık gerekebilir ama 
-            // şimdilik o noktada bekleyip sonra hareket etmesi daha doğal olabilir.
-            // Veya direkt bir sonrakine geçmeli?
-            // Kullanıcı "Işınlan" dediyse oradadır zaten, bir sonraki hedefe yönelmeli.
+
             SonrakiNoktayiBelirle();
         }
     }
@@ -70,13 +67,13 @@ public class HareketliPlatformV2 : MonoBehaviour
 
         Vector3 hedefNokta = hareketNoktalari[mevcutNoktaIndeksi].position;
 
-        // ÖNEMLİ: Z eksenini (derinliği) koru! 
-        // Platformun arkaya kaçıp kaybolmasını engeller.
+        // Z eksenini koru
+
         hedefNokta.z = transform.position.z;
 
         // Hedefe doğru hareket et
         transform.position = Vector3.MoveTowards(transform.position, hedefNokta, hiz * Time.deltaTime);
-        
+
         // Hedefe vardık mı?
         if (Vector3.Distance(transform.position, hedefNokta) < 0.01f)
         {
@@ -109,8 +106,6 @@ public class HareketliPlatformV2 : MonoBehaviour
                 if (mevcutNoktaIndeksi >= hareketNoktalari.Length - 1)
                 {
                     ileriGidiyor = false;
-                    // Eğer son noktadaysak ve sadece 2 nokta varsa, direkt geri dönecek
-                    // Eğer başlangıç indeksi son nokta ise, yönü baştan tersine çevirmek gerekebilir
                 }
             }
             else
@@ -129,7 +124,7 @@ public class HareketliPlatformV2 : MonoBehaviour
     {
         if (hareketNoktalari == null || hareketNoktalari.Length < 2) return;
 
-        Gizmos.color = Color.yellow; // V2 için sarı renk kullanalım, karışmasın
+        Gizmos.color = Color.yellow;
 
         for (int i = 0; i < hareketNoktalari.Length - 1; i++)
         {
